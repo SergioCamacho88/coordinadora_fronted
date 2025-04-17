@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import Login from '../pages/Login';
+import Register from '../pages/Register';
 
 const Router = () => {
   const { isAuthenticated } = useAuth();
@@ -8,6 +9,7 @@ const Router = () => {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route
           path="/dashboard"
