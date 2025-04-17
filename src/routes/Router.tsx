@@ -1,7 +1,9 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
-import Login from '../pages/Login';
-import Register from '../pages/Register';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
+import Login from "../pages/Login";
+import Register from "../pages/Register";
+import CreateOrder from "../pages/CreateOrder";
+import Dashboard from "../pages/Dashboard";
 
 const Router = () => {
   const { isAuthenticated } = useAuth();
@@ -13,15 +15,14 @@ const Router = () => {
         <Route path="/login" element={<Login />} />
         <Route
           path="/dashboard"
-          element={
-            isAuthenticated ? (
-              <div className="p-8">Bienvenido al Dashboard 🚀</div>
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
+          element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
         />
-        <Route path="*" element={<Navigate to={isAuthenticated ? '/dashboard' : '/login'} />} />
+
+        <Route path="/create-order" element={<CreateOrder />} />
+        <Route
+          path="*"
+          element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />}
+        />
       </Routes>
     </BrowserRouter>
   );

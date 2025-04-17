@@ -1,4 +1,4 @@
-import { useContext } from "react";
-import { AuthContext } from "../contexts/AuthContextObject"; // 👈 Importar de AuthContextObject.ts
+import { useContext } from 'react';
+import { AuthContext } from '../contexts/AuthContextObject';
 
 export const useAuth = () => useContext(AuthContext);

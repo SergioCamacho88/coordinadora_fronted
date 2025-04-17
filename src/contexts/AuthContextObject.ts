@@ -1,9 +1,10 @@
-import { createContext } from 'react';
+import { createContext } from "react";
+import { User } from "../types/User";
 
 interface AuthContextProps {
-  user: unknown;
+  user: User | null;
   token: string | null;
-  login: (token: string) => void;
+  login: (token: string, user: User) => void;
   logout: () => void;
   isAuthenticated: boolean;
 }
