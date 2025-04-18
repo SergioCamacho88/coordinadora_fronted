@@ -4,6 +4,7 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import CreateOrder from "../pages/CreateOrder";
 import Dashboard from "../pages/Dashboard";
+import AssignOrder from "../pages/AssignOrder";
 
 const Router = () => {
   const { isAuthenticated } = useAuth();
@@ -22,6 +23,10 @@ const Router = () => {
         <Route
           path="*"
           element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />}
+        />
+        <Route
+          path="/assign-order"
+          element={isAuthenticated ? <AssignOrder /> : <Navigate to="/login" />}
         />
       </Routes>
     </BrowserRouter>

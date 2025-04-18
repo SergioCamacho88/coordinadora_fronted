@@ -1,12 +1,15 @@
 import { useAuth } from "../hooks/useAuth";
 import { Link } from "react-router-dom";
+import AdminDashboard from "./AdminDashboard";
 
-const AdminDashboard = () => (
-  <div>
-    <h1 className="text-3xl mb-4">Panel de Administrador</h1>
-    {/* Aquí componentes para asignar rutas, ver reportes, etc. */}
-  </div>
-);
+// const AdminDashboard = () => (
+//   <div>
+//     <h1 className="text-3xl mb-4">Panel de Administrador</h1>
+//     <a href="/assign-order" className="bg-purple-500 text-white p-2 rounded">
+//       Asignar Orden a Transportista
+//     </a>
+//   </div>
+// );
 
 const UserDashboard = () => (
   <div>
