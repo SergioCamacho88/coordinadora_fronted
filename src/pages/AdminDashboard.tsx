@@ -37,6 +37,57 @@ const AdminDashboard = () => {
     fetchOrders();
     fetchTransportistas();
     fetchRutas();
+
+    // 🚀 Conexión WebSocket
+    const socket = new WebSocket("ws://localhost:3000");
+
+    socket.addEventListener("open", () => {
+      console.log("✅ WebSocket conectado en AdminDashboard");
+    });
+
+    socket.addEventListener("message", (event) => {
+      console.log("📨 Mensaje WebSocket recibido:", event.data);
+      try {
+        const data = JSON.parse(event.data);
+
+        if (data.type === "status_update") {
+          const { orderId, newStatus } = data;
+
+          setOrders((prevOrders) => {
+            return prevOrders
+              .map((order) =>
+                order.id === orderId ? { ...order, status: newStatus } : order
+              )
+              .filter((order) => order.status === "En espera");
+          });
+        }
+
+        if (data.type === "new_order") {
+          const { order } = data;
+
+          if (order.status === "En espera") {
+            setOrders((prevOrders) => [...prevOrders, order]);
+          }
+        }
+      } catch (error) {
+        console.error(
+          "❌ Error procesando mensaje WebSocket en AdminDashboard:",
+          error
+        );
+      }
+    });
+
+    socket.addEventListener("close", () => {
+      console.log("🔌 WebSocket desconectado en AdminDashboard");
+    });
+
+    socket.addEventListener("error", (error) => {
+      console.error("❌ Error en WebSocket en AdminDashboard:", error);
+    });
+
+    return () => {
+      socket.close();
+    };
   }, []);
 
   const fetchOrders = async () => {
@@ -123,7 +174,8 @@ const AdminDashboard = () => {
 
       setMessage("Orden asignada correctamente.");
       setAssigningOrderId(null);
-      fetchOrders();
+      fetchOrders(); // 🚀 Ya estaba
+      fetchTransportistas(); // 🚀 AÑADIR ESTA LÍNEA para refrescar transportistas
     } catch (err) {
       console.error("Error al asignar:", err);
       setMessage("Error al asignar la orden.");
