@@ -14,6 +14,7 @@ interface Order {
 interface Transportista {
   id: number;
   name: string;
+  capacity: number;
 }
 
 const AdminDashboard = () => {
@@ -176,17 +177,27 @@ const AdminDashboard = () => {
                       ) : (
                         <>
                           <option value="">Selecciona transportista</option>
-                          {transportistas.map((transportista) => (
-                            <option
-                              key={transportista.id}
-                              value={transportista.id}
-                            >
-                              {transportista.name}
-                            </option>
-                          ))}
+                          {transportistas.map((transportista) => {
+                            const isDisabled =
+                              transportista.capacity < order.weight;
+                            return (
+                              <option
+                                key={transportista.id}
+                                value={transportista.id}
+                                disabled={isDisabled}
+                              >
+                                {transportista.name} (Capacidad:{" "}
+                                {transportista.capacity} kg){" "}
+                                {isDisabled
+                                  ? "[No disponible]"
+                                  : "[Disponible]"}
+                              </option>
+                            );
+                          })}
                         </>
                       )}
                     </select>
+
                     <select
                       value={selectedRutas[order.id] || ""}
                       onChange={(e) =>
