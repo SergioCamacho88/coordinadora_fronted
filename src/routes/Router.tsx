@@ -5,6 +5,7 @@ import Register from "../pages/Register";
 import CreateOrder from "../pages/CreateOrder";
 import Dashboard from "../pages/Dashboard";
 import AssignOrder from "../pages/AssignOrder";
+import TrackOrderPage from "../pages/TrackOrderPage"; // 👈 Importa tu nueva página
 
 const Router = () => {
   const { isAuthenticated } = useAuth();
@@ -28,6 +29,7 @@ const Router = () => {
           path="/assign-order"
           element={isAuthenticated ? <AssignOrder /> : <Navigate to="/login" />}
         />
+        <Route path="/seguimiento/:orderId" element={<TrackOrderPage />} />
       </Routes>
     </BrowserRouter>
   );
