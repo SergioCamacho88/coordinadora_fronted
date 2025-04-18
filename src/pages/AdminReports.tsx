@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { fetchReports } from "../services/reportsService";
 import {
@@ -95,27 +95,30 @@ export default function AdminReports() {
     setFilters({ ...filters, [e.target.name]: e.target.value });
   };
   const [pagina, setPagina] = useState(1);
-  const [limite, setLimite] = useState(10);
+  const [limite] = useState(10);
 
-  const handleFetchReports = async (paginaActual = pagina) => {
-    setLoading(true);
-    try {
-      if (!token) {
-        throw new Error("No hay token de autenticación");
+  const handleFetchReports = useCallback(
+    async (paginaActual = pagina) => {
+      setLoading(true);
+      try {
+        if (!token) {
+          throw new Error("No hay token de autenticación");
+        }
+        const data = await fetchReports(filters, paginaActual, limite);
+        setReports(data);
+        setPagina(paginaActual);
+      } catch (error) {
+        console.error("Error fetching reports", error);
+      } finally {
+        setLoading(false);
       }
-      const data = await fetchReports(filters, paginaActual, limite);
-      setReports(data);
-      setPagina(paginaActual); // Actualiza la página actual después de la búsqueda
-    } catch (error) {
-      console.error("Error fetching reports", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [filters, limite, pagina, token]
+  );
 
   useEffect(() => {
     handleFetchReports();
-  }, []);
+  }, [handleFetchReports]);
 
   return (
     <div className="p-8">
@@ -161,7 +164,7 @@ export default function AdminReports() {
       </div>
 
       <button
-        onClick={handleFetchReports}
+        onClick={() => handleFetchReports()}
         className="bg-blue-500 text-white px-4 py-2 rounded mb-8"
       >
         Buscar
