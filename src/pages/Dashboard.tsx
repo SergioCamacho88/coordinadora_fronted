@@ -1,5 +1,4 @@
 import { useAuth } from "../hooks/useAuth";
-import { Link } from "react-router-dom";
 import AdminDashboard from "./AdminDashboard";
 
 // const AdminDashboard = () => (
@@ -15,13 +14,14 @@ const UserDashboard = () => (
   <div>
     <h1 className="text-3xl mb-4">Panel de Usuario</h1>
     <div className="space-y-4">
-      <Link
-        to="/create-order"
-        className="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
-      >
-        Crear Nueva Orden
-      </Link>
-      {/* Aquí componentes para seguimiento */}
+      <p className="text-lg">Bienvenido a tu panel. Aquí podrás:</p>
+      <ul className="list-disc list-inside space-y-2">
+        <li>Crear nuevas órdenes de envío de paquetes.</li>
+        <li>
+          Consultar y hacer seguimiento en tiempo real al estado de tus envíos.
+        </li>
+        <li>Visualizar el historial de actualizaciones de cada pedido.</li>
+      </ul>
     </div>
   </div>
 );
