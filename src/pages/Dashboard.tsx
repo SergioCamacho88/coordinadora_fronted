@@ -1,5 +1,6 @@
 import { useAuth } from "../hooks/useAuth";
 import AdminDashboard from "./AdminDashboard";
+import SidebarMenu from "../components/SidebarMenu";
 
 // const AdminDashboard = () => (
 //   <div>
@@ -11,19 +12,17 @@ import AdminDashboard from "./AdminDashboard";
 // );
 
 const UserDashboard = () => (
-  <div>
-    <h1 className="text-3xl mb-4">Panel de Usuario</h1>
-    <div className="space-y-4">
-      <p className="text-lg">Bienvenido a tu panel. Aquí podrás:</p>
-      <ul className="list-disc list-inside space-y-2">
-        <li>Crear nuevas órdenes de envío de paquetes.</li>
-        <li>
-          Consultar y hacer seguimiento en tiempo real al estado de tus envíos.
-        </li>
-        <li>Visualizar el historial de actualizaciones de cada pedido.</li>
-      </ul>
-    </div>
-  </div>
+  <SidebarMenu>
+    <h1>Panel de Usuario</h1>
+    <p>Bienvenido a tu panel. Aquí podrás:</p>
+    <ul>
+      <li>Crear nuevas órdenes de envío de paquetes.</li>
+      <li>
+        Consultar y hacer seguimiento en tiempo real al estado de tus envíos.
+      </li>
+      <li>Visualizar el historial de actualizaciones de cada pedido.</li>
+    </ul>
+  </SidebarMenu>
 );
 
 const Dashboard = () => {

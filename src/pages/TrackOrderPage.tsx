@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "../services/api";
+import {
+  Box,
+  Typography,
+  Chip,
+  Stack,
+  Alert,
+  Divider,
+} from "@mui/material";
 
 interface HistoryEntry {
   status: string;
@@ -59,12 +67,11 @@ const TrackOrderPage = () => {
           console.log("📨 Actualizando estado:", data.newStatus);
           setStatus(data.newStatus);
 
-          // 🚀 Añadir nueva entrada al historial localmente
           setHistory((prevHistory) => [
             ...prevHistory,
             {
               status: data.newStatus,
-              changed_at: data.updatedAt || new Date().toISOString(), // Usamos updatedAt si viene
+              changed_at: data.updatedAt || new Date().toISOString(),
             },
           ]);
         } else {
@@ -88,59 +95,72 @@ const TrackOrderPage = () => {
     };
   }, [orderId]);
 
-  const getBadgeColor = (status: string) => {
+  const getChipColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "en espera":
-        return "bg-yellow-400 text-black";
+        return "warning";
       case "en tránsito":
-        return "bg-blue-400 text-white";
+        return "info";
       case "entregado":
-        return "bg-green-400 text-white";
+        return "success";
       default:
-        return "bg-gray-300 text-black";
+        return "default";
     }
   };
 
-  if (error) return <div className="p-6 text-red-500">{error}</div>;
+  if (error) {
+    return (
+      <Box p={4}>
+        <Alert severity="error">{error}</Alert>
+      </Box>
+    );
+  }
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl mb-6">Seguimiento de Orden #{orderId}</h1>
-      <p className="text-lg mb-6 flex items-center gap-2">
-        Estado actual:
-        {status ? (
-          <span
-            className={`px-2 py-1 rounded-full text-sm font-semibold ${getBadgeColor(
-              status
-            )}`}
-          >
-            {status}
-          </span>
-        ) : (
-          <span className="text-gray-500">Sin estado</span>
-        )}
-      </p>
+    <Box p={4}>
+      <Typography variant="h4" fontWeight="bold" mb={3}>
+        Seguimiento de Orden #{orderId}
+      </Typography>
 
-      <h2 className="text-xl mb-4">Historial de estados:</h2>
-      <ul className="list-disc list-inside">
-        {Array.isArray(history) && history.length > 0 ? (
-          history.map((entry, index) => (
-            <li key={index} className="flex items-center gap-2">
-              <span>{new Date(entry.changed_at).toLocaleString()} -</span>
-              <span
-                className={`px-2 py-1 rounded-full text-sm font-semibold ${getBadgeColor(
-                  entry.status
-                )}`}
-              >
-                {entry.status}
-              </span>
-            </li>
-          ))
-        ) : (
-          <li>No hay historial disponible.</li>
-        )}
-      </ul>
-    </div>
+      <Typography variant="h6" mb={2}>
+        Estado actual:
+      </Typography>
+
+      {status ? (
+        <Chip
+          label={status}
+          color={getChipColor(status)}
+          sx={{ fontWeight: "bold", mb: 4 }}
+        />
+      ) : (
+        <Typography color="text.secondary">Sin estado</Typography>
+      )}
+
+      <Divider sx={{ my: 4 }} />
+
+      <Typography variant="h6" mb={2}>
+        Historial de estados:
+      </Typography>
+
+      {Array.isArray(history) && history.length > 0 ? (
+        <Stack spacing={2}>
+          {history.map((entry, index) => (
+            <Box key={index} display="flex" alignItems="center" gap={2}>
+              <Typography variant="body2" color="text.secondary">
+                {new Date(entry.changed_at).toLocaleString()}
+              </Typography>
+              <Chip
+                label={entry.status}
+                color={getChipColor(entry.status)}
+                size="small"
+              />
+            </Box>
+          ))}
+        </Stack>
+      ) : (
+        <Typography>No hay historial disponible.</Typography>
+      )}
+    </Box>
   );
 };
 

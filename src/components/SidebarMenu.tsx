@@ -1,14 +1,34 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { AuthContext } from "../contexts/AuthContextObject"; // Corregir la ruta
+import { AuthContext } from "../contexts/AuthContextObject";
+import {
+  AppBar,
+  Toolbar,
+  Box,
+  Typography,
+  IconButton,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  Button,
+  Divider,
+} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
 
-const SidebarMenu = () => {
+const SidebarMenu = ({ children }: { children: React.ReactNode }) => {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate("/login");
+  };
+
+  const toggleDrawer = () => {
+    setOpen(!open);
   };
 
   const menuItems =
@@ -26,34 +46,85 @@ const SidebarMenu = () => {
         ];
 
   return (
-    <aside className="w-64 h-screen bg-white shadow-md p-6 flex flex-col">
-      <div className="mb-10 text-2xl font-bold text-gray-800">
-        {user?.role === "admin" ? "Bienvenido Admin " : "Bienvenido usuario "}
-        {user?.email}
-      </div>
-      <nav className="flex-1">
-        <ul className="space-y-4">
-          {menuItems.map((item) => (
-            <li key={item.path}>
-              <Link
-                to={item.path}
-                className="block py-2 px-4 rounded hover:bg-gray-100 text-gray-700 font-medium"
-              >
-                {item.name}
-              </Link>
-            </li>
-          ))}
-          <li>
-            <button
-              onClick={handleLogout}
-              className="w-full text-left py-2 px-4 rounded hover:bg-red-100 text-red-600 font-medium"
+    <>
+      {/* AppBar */}
+      <AppBar position="fixed" sx={{ backgroundColor: "#1565c0" }}>
+        <Toolbar>
+          {/* Icono de Menú */}
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            onClick={toggleDrawer}
+            sx={{ mr: 2 }}
+          >
+            <MenuIcon />
+          </IconButton>
+
+          {/* Título */}
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+            {user?.role === "admin" ? "Panel Admin" : "Panel Usuario"}
+          </Typography>
+
+          {/* Email */}
+          <Typography variant="body2">{user?.email} </Typography>
+        </Toolbar>
+      </AppBar>
+
+      {/* Drawer */}
+      <Drawer
+        anchor="left"
+        open={open}
+        onClose={toggleDrawer}
+        sx={{
+          "& .MuiDrawer-paper": { width: 260, padding: 2 },
+        }}
+      >
+        <Box display="flex" flexDirection="column" height="100%">
+          <Box mb={2}>
+            <Typography variant="h6" fontWeight="bold">
+              Menú
+            </Typography>
+          </Box>
+
+          <Divider sx={{ mb: 2 }} />
+
+          {/* Lista */}
+          <Box flexGrow={1}>
+            <List>
+              {menuItems.map((item) => (
+                <ListItem key={item.path} disablePadding>
+                  <ListItemButton
+                    component={Link}
+                    to={item.path}
+                    onClick={toggleDrawer}
+                  >
+                    <ListItemText primary={item.name} />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </List>
+            <Button
+              sx={{ mt: 1, p: 1 }}
+              variant="contained"
+              color="error"
+              onClick={() => {
+                handleLogout();
+                setOpen(false);
+              }}
+              fullWidth
             >
               Cerrar Sesión
-            </button>
-          </li>
-        </ul>
-      </nav>
-    </aside>
+            </Button>
+          </Box>
+        </Box>
+      </Drawer>
+
+      {/* Espaciador para bajar el contenido */}
+      <Box component="main" sx={{ mt: 8, p: 3 }}>
+        {children}
+      </Box>
+    </>
   );
 };
 

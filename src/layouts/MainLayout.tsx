@@ -3,12 +3,12 @@ import SidebarMenu from "../components/SidebarMenu";
 
 const MainLayout = () => {
   return (
-    <div className="flex h-screen">
+    <div className=" h-screen">
       {/* Menú lateral */}
       <SidebarMenu />
 
       {/* Contenido principal */}
-      <main className="flex-1 overflow-y-auto p-6 bg-gray-50">
+      <main className="">
         <Outlet /> {/* Aquí se renderizan las páginas dinámicas */}
       </main>
     </div>

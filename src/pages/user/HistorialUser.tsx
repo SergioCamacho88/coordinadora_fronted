@@ -2,6 +2,19 @@ import { useEffect, useState } from "react";
 import { getHistorialEnvios } from "../../services";
 import { Envio } from "../../types/Envio";
 import { Link } from "react-router-dom";
+import {
+  Box,
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Button,
+  Skeleton,
+} from "@mui/material";
 
 const HistorialUser = () => {
   const [historial, setHistorial] = useState<Envio[]>([]);
@@ -10,7 +23,7 @@ const HistorialUser = () => {
   useEffect(() => {
     const fetchHistorial = async () => {
       try {
-        const data = await getHistorialEnvios(); // Llamada a API
+        const data = await getHistorialEnvios();
         setHistorial(data);
       } catch (error) {
         console.error("Error al cargar historial de envíos", error);
@@ -23,54 +36,67 @@ const HistorialUser = () => {
   }, []);
 
   if (loading) {
-    return <div className="text-center py-10">Cargando historial...</div>;
+    return (
+      <Box p={4}>
+        <Typography variant="h5" mb={2}>
+          Cargando historial...
+        </Typography>
+        <Skeleton variant="rectangular" height={300} />
+      </Box>
+    );
   }
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Historial de Envíos</h1>
+    <Box p={4}>
+      <Typography variant="h4" fontWeight="bold" mb={4}>
+        Historial de Envíos
+      </Typography>
+
       {historial.length === 0 ? (
-        <p>No tienes envíos en tu historial.</p>
+        <Typography>No tienes envíos en tu historial.</Typography>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white shadow rounded-lg">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="text-left py-3 px-4">ID</th>
-                <th className="text-left py-3 px-4">Fecha</th>
-                <th className="text-left py-3 px-4">Destino</th>
-                <th className="text-left py-3 px-4">Estado</th>
-                <th className="text-left py-3 px-4">Producto</th>
-                <th className="text-left py-3 px-4">Peso</th>
-                <th className="text-left py-3 px-4">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
+        <TableContainer component={Paper} elevation={3}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell><strong>ID</strong></TableCell>
+                <TableCell><strong>Fecha</strong></TableCell>
+                <TableCell><strong>Destino</strong></TableCell>
+                <TableCell><strong>Estado</strong></TableCell>
+                <TableCell><strong>Producto</strong></TableCell>
+                <TableCell><strong>Peso</strong></TableCell>
+                <TableCell><strong>Acciones</strong></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
               {historial.map((envio) => (
-                <tr key={envio.id} className="border-t">
-                  <td className="py-2 px-4">{envio.id}</td>
-                  <td className="py-2 px-4">
+                <TableRow key={envio.id}>
+                  <TableCell>{envio.id}</TableCell>
+                  <TableCell>
                     {new Date(envio.created_at).toLocaleDateString()}
-                  </td>
-                  <td className="py-2 px-4">{envio.destination_address}</td>
-                  <td className="py-2 px-4">{envio.status}</td>
-                  <td className="py-2 px-4">{envio.product_type}</td>
-                  <td className="py-2 px-4">{envio.weight} kg</td>
-                  <td className="py-2 px-4">
-                    <Link
+                  </TableCell>
+                  <TableCell>{envio.destination_address}</TableCell>
+                  <TableCell>{envio.status}</TableCell>
+                  <TableCell>{envio.product_type}</TableCell>
+                  <TableCell>{envio.weight} kg</TableCell>
+                  <TableCell>
+                    <Button
+                      component={Link}
                       to={`/seguimiento/${envio.id}`}
-                      className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors"
+                      variant="contained"
+                      size="small"
+                      color="primary"
                     >
                       Seguimiento
-                    </Link>
-                  </td>
-                </tr>
+                    </Button>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
-        </div>
+            </TableBody>
+          </Table>
+        </TableContainer>
       )}
-    </div>
+    </Box>
   );
 };
 
