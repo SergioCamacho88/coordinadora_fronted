@@ -1,130 +1,166 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import React from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Grid,
+  Typography,
+} from "@mui/material";
 
 const Welcome: React.FC = () => {
   const { isAuthenticated } = useAuth();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      <div className="container mx-auto px-4 py-12">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-blue-800 mb-4">
-            🚚 Coordinadora - Sistema de Gestión Logística
-          </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Plataforma integral para gestión de envíos, asignación de rutas logísticas y seguimiento de órdenes en tiempo real.
-          </p>
-        </div>
+    <Box
+      minHeight="100vh"
+      bgcolor="#f0f4f8"
+      py={8}
+      px={6}
+      display="flex"
+      flexDirection="column"
+    >
+      <Box maxWidth="1600px" mx="auto">
+        <Box mb={8}>
+          <Typography
+            variant="h3"
+            fontWeight="bold"
+            color="primary.main"
+            gutterBottom
+          >
+            Coordinadora - Sistema de Gestión Logística
+          </Typography>
+          <Typography variant="h6" color="text.secondary" maxWidth="700px">
+            Plataforma integral para gestión de envíos, asignación de rutas
+            logísticas y seguimiento de órdenes en tiempo real.
+          </Typography>
+        </Box>
 
-        <div className="grid md:grid-cols-2 gap-8 mb-12">
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-2xl font-bold text-blue-700 mb-4">📦 Gestión de Envíos</h2>
-            <ul className="space-y-2 text-gray-700">
-              <li className="flex items-start">
-                <span className="text-green-500 mr-2">✓</span>
-                Creación y seguimiento de órdenes de envío
-              </li>
-              <li className="flex items-start">
-                <span className="text-green-500 mr-2">✓</span>
-                Asignación inteligente de rutas a transportistas
-              </li>
-              <li className="flex items-start">
-                <span className="text-green-500 mr-2">✓</span>
-                Seguimiento en tiempo real del estado de los envíos
-              </li>
-              <li className="flex items-start">
-                <span className="text-green-500 mr-2">✓</span>
-                Notificaciones automáticas por correo electrónico
-              </li>
-            </ul>
-          </div>
+        <Grid container columns={12} spacing={4} mb={8}>
+          <Grid xs={12} md={6}>
+            <Card>
+              <CardContent>
+                <Typography
+                  variant="h5"
+                  fontWeight="bold"
+                  color="primary.dark"
+                  gutterBottom
+                >
+                  📦 Gestión de Envíos
+                </Typography>
+                <Box component="ul" sx={{ pl: 2, color: "text.secondary" }}>
+                  <li>Creación y seguimiento de órdenes de envío</li>
+                  <li>Asignación inteligente de rutas a transportistas</li>
+                  <li>Seguimiento en tiempo real del estado de los envíos</li>
+                  <li>Notificaciones automáticas por correo electrónico</li>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
 
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-2xl font-bold text-blue-700 mb-4">📊 Reportes y Métricas</h2>
-            <ul className="space-y-2 text-gray-700">
-              <li className="flex items-start">
-                <span className="text-green-500 mr-2">✓</span>
-                Consulta avanzada de envíos con filtros personalizados
-              </li>
-              <li className="flex items-start">
-                <span className="text-green-500 mr-2">✓</span>
-                Métricas de desempeño logístico
-              </li>
-              <li className="flex items-start">
-                <span className="text-green-500 mr-2">✓</span>
-                Análisis de tiempos de entrega por transportista
-              </li>
-              <li className="flex items-start">
-                <span className="text-green-500 mr-2">✓</span>
-                Visualización de datos en gráficos interactivos
-              </li>
-            </ul>
-          </div>
-        </div>
+          <Grid xs={12} md={6}>
+            <Card>
+              <CardContent>
+                <Typography
+                  variant="h5"
+                  fontWeight="bold"
+                  color="primary.dark"
+                  gutterBottom
+                >
+                  📊 Reportes y Métricas
+                </Typography>
+                <Box component="ul" sx={{ pl: 2, color: "text.secondary" }}>
+                  <li>
+                    Consulta avanzada de envíos con filtros personalizados
+                  </li>
+                  <li>Métricas de desempeño logístico</li>
+                  <li>Análisis de tiempos de entrega por transportista</li>
+                  <li>Visualización de datos en gráficos interactivos</li>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
 
-        <div className="bg-white p-6 rounded-lg shadow-md mb-12">
-          <h2 className="text-2xl font-bold text-blue-700 mb-4">🛠️ Tecnologías Principales</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-blue-50 p-3 rounded text-center">
-              <span className="font-semibold">Node.js + TypeScript</span>
-            </div>
-            <div className="bg-blue-50 p-3 rounded text-center">
-              <span className="font-semibold">Express</span>
-            </div>
-            <div className="bg-blue-50 p-3 rounded text-center">
-              <span className="font-semibold">MySQL</span>
-            </div>
-            <div className="bg-blue-50 p-3 rounded text-center">
-              <span className="font-semibold">Redis</span>
-            </div>
-            <div className="bg-blue-50 p-3 rounded text-center">
-              <span className="font-semibold">WebSocket</span>
-            </div>
-            <div className="bg-blue-50 p-3 rounded text-center">
-              <span className="font-semibold">JWT</span>
-            </div>
-            <div className="bg-blue-50 p-3 rounded text-center">
-              <span className="font-semibold">React</span>
-            </div>
-            <div className="bg-blue-50 p-3 rounded text-center">
-              <span className="font-semibold">Tailwind CSS</span>
-            </div>
-          </div>
-        </div>
+        <Card sx={{ mb: 8 }}>
+          <CardContent>
+            <Typography
+              variant="h5"
+              fontWeight="bold"
+              color="primary.dark"
+              gutterBottom
+            >
+              🛠️ Tecnologías Principales
+            </Typography>
+            <Grid container columns={12} spacing={2}>
+              {[
+                "Node.js + TypeScript",
+                "Express",
+                "MySQL",
+                "Redis",
+                "WebSocket",
+                "JWT",
+                "React",
+                "Material-UI",
+              ].map((tech) => (
+                <Grid xs={6} md={3} key={tech}>
+                  <Box
+                    bgcolor="#e3f2fd"
+                    p={2}
+                    textAlign="center"
+                    borderRadius={2}
+                  >
+                    <Typography fontWeight="medium">{tech}</Typography>
+                  </Box>
+                </Grid>
+              ))}
+            </Grid>
+          </CardContent>
+        </Card>
 
-        <div className="text-center">
+        <Box mb={8}>
           {isAuthenticated ? (
-            <Link
+            <Button
+              component={Link}
               to="/dashboard"
-              className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300"
+              variant="contained"
+              color="primary"
+              size="large"
             >
               Ir al Dashboard
-            </Link>
+            </Button>
           ) : (
-            <div className="space-x-4">
-              <Link
+            <Box display="flex" gap={2}>
+              <Button
+                component={Link}
                 to="/login"
-                className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300"
+                variant="contained"
+                color="primary"
+                size="large"
               >
                 Iniciar Sesión
-              </Link>
-              <Link
+              </Button>
+              <Button
+                component={Link}
                 to="/register"
-                className="inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300"
+                variant="contained"
+                color="success"
+                size="large"
               >
                 Registrarse
-              </Link>
-            </div>
+              </Button>
+            </Box>
           )}
-        </div>
+        </Box>
 
-        <div className="mt-12 text-center text-gray-500 text-sm">
-          <p>Desarrollado por Sergio Camacho - Abril 2025</p>
-          <p>Prueba Técnica Fullstack - Coordinadora</p>
-        </div>
-      </div>
-    </div>
+        <Box color="text.secondary" fontSize="0.875rem" pb={4}>
+          <Typography>Desarrollado por Sergio Camacho - Abril 2025</Typography>
+          <Typography>Prueba Técnica Fullstack - Coordinadora</Typography>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 

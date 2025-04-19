@@ -3,6 +3,14 @@ import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import axios from "../services/api";
 import { User } from "../types/User";
+import {
+  Button,
+  TextField,
+  Box,
+  Typography,
+  Container,
+  Alert,
+} from "@mui/material";
 
 const Login = () => {
   const { login } = useAuth();
@@ -53,7 +61,7 @@ const Login = () => {
       console.log("Token recibido:", token);
       console.log("Usuario decodificado:", user);
 
-      login(token, user);
+      await login(token, user);
       navigate("/dashboard");
     } catch (err) {
       console.error("Error en login:", err);
@@ -62,37 +70,60 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-6 rounded shadow-md w-80"
+    <Container component="main" maxWidth="xs">
+      <Box
+        sx={{
+          marginTop: 8,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
       >
-        <h2 className="text-2xl mb-4">Iniciar Sesión</h2>
-        {error && <p className="text-red-500 mb-4">{error}</p>}
-        <input
-          type="email"
-          placeholder="Correo electrónico"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="border p-2 w-full mb-4"
-          required
-        />
-        <input
-          type="password"
-          placeholder="Contraseña"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="border p-2 w-full mb-4"
-          required
-        />
-        <button
-          type="submit"
-          className="bg-blue-500 text-white p-2 w-full rounded"
-        >
+        <Typography component="h1" variant="h5">
           Iniciar Sesión
-        </button>
-      </form>
-    </div>
+        </Typography>
+        {error && (
+          <Alert severity="error" sx={{ mt: 2, width: "100%" }}>
+            {error}
+          </Alert>
+        )}
+        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Correo electrónico"
+            name="email"
+            autoComplete="email"
+            autoFocus
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            type="email"
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Contraseña"
+            type="password"
+            id="password"
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+          >
+            Iniciar Sesión
+          </Button>
+        </Box>
+      </Box>
+    </Container>
   );
 };
 
