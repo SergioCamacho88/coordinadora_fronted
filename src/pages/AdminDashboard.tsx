@@ -1,12 +1,28 @@
 import { useEffect, useState } from "react";
 import axios from "../services/api";
 import { Ruta } from "../services/routesService";
+import {
+  Box,
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Select,
+  MenuItem,
+  Button,
+  Stack,
+  Alert,
+} from "@mui/material";
 
 interface Order {
   id: number;
   weight: number;
   dimensions: string;
-  productType: string;
+  product_type: string;
   destination_address: string;
   status: string;
 }
@@ -38,7 +54,6 @@ const AdminDashboard = () => {
     fetchTransportistas();
     fetchRutas();
 
-    // 🚀 Conexión WebSocket
     const socket = new WebSocket("ws://localhost:3000");
 
     socket.addEventListener("open", () => {
@@ -53,13 +68,13 @@ const AdminDashboard = () => {
         if (data.type === "status_update") {
           const { orderId, newStatus } = data;
 
-          setOrders((prevOrders) => {
-            return prevOrders
+          setOrders((prevOrders) =>
+            prevOrders
               .map((order) =>
                 order.id === orderId ? { ...order, status: newStatus } : order
               )
-              .filter((order) => order.status === "En espera");
-          });
+              .filter((order) => order.status === "En espera")
+          );
         }
 
         if (data.type === "new_order") {
@@ -70,10 +85,7 @@ const AdminDashboard = () => {
           }
         }
       } catch (error) {
-        console.error(
-          "❌ Error procesando mensaje WebSocket en AdminDashboard:",
-          error
-        );
+        console.error("❌ Error procesando mensaje WebSocket:", error);
       }
     });
 
@@ -95,11 +107,9 @@ const AdminDashboard = () => {
       const response = await axios.get("/orders", {
         params: { status: "En espera" },
       });
-
       const orders = Array.isArray(response.data)
         ? response.data
         : response.data.data;
-
       setOrders(orders);
     } catch (err) {
       console.error("Error al cargar órdenes:", err);
@@ -110,11 +120,9 @@ const AdminDashboard = () => {
     try {
       setLoadingTransportistas(true);
       const response = await axios.get("/transportistas/available");
-
       const transportistas = Array.isArray(response.data)
         ? response.data
         : response.data.data;
-
       setTransportistas(transportistas);
     } catch (err) {
       console.error("Error al cargar transportistas:", err);
@@ -127,11 +135,9 @@ const AdminDashboard = () => {
     try {
       setLoadingRutas(true);
       const response = await axios.get("/rutas");
-
       const rutas = Array.isArray(response.data)
         ? response.data
         : response.data.data;
-
       setRutas(rutas);
     } catch (err) {
       console.error("Error al cargar rutas:", err);
@@ -174,8 +180,8 @@ const AdminDashboard = () => {
 
       setMessage("Orden asignada correctamente.");
       setAssigningOrderId(null);
-      fetchOrders(); // 🚀 Ya estaba
-      fetchTransportistas(); // 🚀 AÑADIR ESTA LÍNEA para refrescar transportistas
+      fetchOrders();
+      fetchTransportistas();
     } catch (err) {
       console.error("Error al asignar:", err);
       setMessage("Error al asignar la orden.");
@@ -183,118 +189,129 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-3xl mb-6">
+    <Box p={4}>
+      <Typography variant="h4" fontWeight="bold" mb={4}>
         Panel de Administración - Órdenes en Espera
-      </h1>
-      {message && <p className="text-green-600 mb-4">{message}</p>}
+      </Typography>
 
-      <table className="min-w-full bg-white">
-        <thead>
-          <tr>
-            <th className="py-2">ID Orden</th>
-            <th className="py-2">Peso</th>
-            <th className="py-2">Dimensiones</th>
-            <th className="py-2">Producto</th>
-            <th className="py-2">Dirección</th>
-            <th className="py-2">Acción</th>
-          </tr>
-        </thead>
-        <tbody>
-          {orders.map((order) => (
-            <tr key={order.id} className="text-center">
-              <td className="border p-2">{order.id}</td>
-              <td className="border p-2">{order.weight} kg</td>
-              <td className="border p-2">{order.dimensions}</td>
-              <td className="border p-2">{order.productType}</td>
-              <td className="border p-2">{order.destination_address}</td>
-              <td className="border p-2">
-                {assigningOrderId === order.id ? (
-                  <div className="flex flex-col items-center">
-                    <select
-                      value={selectedTransportistas[order.id] || ""}
-                      onChange={(e) =>
-                        handleTransportistaSelectChange(
-                          order.id,
-                          e.target.value
-                        )
-                      }
-                      className="border p-1 mb-2"
-                      disabled={loadingTransportistas}
-                    >
-                      {loadingTransportistas ? (
-                        <option>Cargando transportistas...</option>
-                      ) : transportistas.length === 0 ? (
-                        <option>No hay transportistas disponibles</option>
-                      ) : (
-                        <>
-                          <option value="">Selecciona transportista</option>
-                          {transportistas.map((transportista) => {
-                            const isDisabled =
-                              transportista.capacity < order.weight;
-                            return (
-                              <option
-                                key={transportista.id}
-                                value={transportista.id}
-                                disabled={isDisabled}
+      {message && (
+        <Alert severity="success" sx={{ mb: 4 }}>
+          {message}
+        </Alert>
+      )}
+
+      <TableContainer component={Paper} elevation={3}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>ID Orden</TableCell>
+              <TableCell>Peso</TableCell>
+              <TableCell>Dimensiones</TableCell>
+              <TableCell>Producto</TableCell>
+              <TableCell>Dirección</TableCell>
+              <TableCell>Acción</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {orders.map((order) => (
+              <TableRow key={order.id}>
+                <TableCell>{order.id}</TableCell>
+                <TableCell>{order.weight} kg</TableCell>
+                <TableCell>{order.dimensions}</TableCell>
+                <TableCell>{order.product_type}</TableCell>
+                <TableCell>{order.destination_address}</TableCell>
+                <TableCell>
+                  {assigningOrderId === order.id ? (
+                    <Stack spacing={2}>
+                      <Select
+                        value={selectedTransportistas[order.id] || ""}
+                        onChange={(e) =>
+                          handleTransportistaSelectChange(
+                            order.id,
+                            e.target.value
+                          )
+                        }
+                        size="small"
+                        fullWidth
+                        disabled={loadingTransportistas}
+                      >
+                        {loadingTransportistas ? (
+                          <MenuItem disabled>
+                            Cargando transportistas...
+                          </MenuItem>
+                        ) : (
+                          [
+                            <MenuItem key="placeholder" value="">
+                              Selecciona transportista
+                            </MenuItem>,
+                            ...transportistas.map((t) => (
+                              <MenuItem
+                                key={t.id}
+                                value={t.id}
+                                disabled={t.capacity < order.weight}
                               >
-                                {transportista.name} (Capacidad:{" "}
-                                {transportista.capacity} kg){" "}
-                                {isDisabled
+                                {t.name} ({t.capacity} kg){" "}
+                                {t.capacity < order.weight
                                   ? "[No disponible]"
                                   : "[Disponible]"}
-                              </option>
-                            );
-                          })}
-                        </>
-                      )}
-                    </select>
+                              </MenuItem>
+                            )),
+                          ]
+                        )}
+                      </Select>
 
-                    <select
-                      value={selectedRutas[order.id] || ""}
-                      onChange={(e) =>
-                        handleRutaSelectChange(order.id, e.target.value)
-                      }
-                      className="border p-1 mb-2"
-                      disabled={loadingRutas}
-                    >
-                      {loadingRutas ? (
-                        <option>Cargando rutas...</option>
-                      ) : rutas.length === 0 ? (
-                        <option>No hay rutas disponibles</option>
-                      ) : (
-                        <>
-                          <option value="">Selecciona ruta</option>
-                          {rutas.map((ruta) => (
-                            <option key={ruta.id} value={ruta.id}>
-                              {ruta.name}
-                            </option>
-                          ))}
-                        </>
-                      )}
-                    </select>
+                      <Select
+                        value={selectedRutas[order.id] || ""}
+                        onChange={(e) =>
+                          handleRutaSelectChange(order.id, e.target.value)
+                        }
+                        size="small"
+                        fullWidth
+                        disabled={loadingRutas}
+                      >
+                        {loadingRutas ? (
+                          <MenuItem disabled>Cargando rutas...</MenuItem>
+                        ) : (
+                          [
+                            <MenuItem key="placeholder" value="">
+                              Selecciona ruta
+                            </MenuItem>,
+                            ...rutas.map((ruta) => (
+                              <MenuItem key={ruta.id} value={ruta.id}>
+                                {ruta.name}
+                              </MenuItem>
+                            )),
+                          ]
+                        )}
+                      </Select>
 
-                    <button
-                      onClick={() => handleAssign(order.id)}
-                      className="bg-blue-500 text-white px-3 py-1 rounded"
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => handleAssign(order.id)}
+                        fullWidth
+                      >
+                        Confirmar
+                      </Button>
+                    </Stack>
+                  ) : (
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      size="small"
+                      onClick={() => setAssigningOrderId(order.id)}
+                      fullWidth
                     >
-                      Confirmar
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => setAssigningOrderId(order.id)}
-                    className="bg-purple-500 text-white px-3 py-1 rounded"
-                  >
-                    Asignar
-                  </button>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+                      Asignar
+                    </Button>
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
   );
 };
 

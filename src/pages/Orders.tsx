@@ -1,37 +1,50 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
+import axios from "../services/api";
+import TrackOrderMini from "../components/TrackOrderMini"; // ajusta la ruta si es necesario
+
+import {
+  Box,
+  Dialog,
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Button,
+  Alert,
+  Skeleton,
+} from "@mui/material";
 
 interface Order {
   id: number;
   status: string;
   created_at: string;
+  destination_address: string;
+  product_type: string;
+  weight: number;
 }
 
 const Orders = () => {
-  const { token } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        if (!token) {
+        if (!isAuthenticated) {
           throw new Error("No hay token de autenticación");
         }
 
-        const response = await fetch("/api/orders", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Error al obtener las órdenes");
-        }
-
-        const data = await response.json();
-        setOrders(data);
+        const response = await axios.get("/orders");
+        setOrders(response.data);
       } catch (err: unknown) {
         console.error("Error fetching orders", err);
         setError(err instanceof Error ? err.message : "Error desconocido");
@@ -41,51 +54,120 @@ const Orders = () => {
     };
 
     fetchOrders();
-  }, [token]);
+  }, [isAuthenticated]);
 
-  if (loading) return <div className="p-6">Cargando órdenes...</div>;
-  if (error) return <div className="p-6 text-red-500">Error: {error}</div>;
+  if (loading) {
+    return (
+      <Box p={4}>
+        <Typography variant="h5" mb={2}>
+          Cargando órdenes...
+        </Typography>
+        <Skeleton variant="rectangular" height={300} />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box p={4}>
+        <Alert severity="error">Error: {error}</Alert>
+      </Box>
+    );
+  }
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Órdenes</h1>
+    <Box p={4}>
+      <Typography variant="h4" fontWeight="bold" mb={4}>
+        Órdenes
+      </Typography>
 
       {orders.length === 0 ? (
-        <p>No hay órdenes disponibles.</p>
+        <Typography>No hay órdenes disponibles.</Typography>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white">
-            <thead>
-              <tr>
-                <th className="py-2 px-4 border">ID</th>
-                <th className="py-2 px-4 border">Estado</th>
-                <th className="py-2 px-4 border">Fecha</th>
-                <th className="py-2 px-4 border">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
+        <TableContainer component={Paper} elevation={3}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>
+                  <strong>ID</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Estado</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Fecha</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Destino</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Producto</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Peso</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Acciones</strong>
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
               {orders.map((order) => (
-                <tr key={order.id}>
-                  <td className="py-2 px-4 border">{order.id}</td>
-                  <td className="py-2 px-4 border">{order.status}</td>
-                  <td className="py-2 px-4 border">
+                <TableRow key={order.id}>
+                  <TableCell>{order.id}</TableCell>
+                  <TableCell>{order.status}</TableCell>
+                  <TableCell>
                     {new Date(order.created_at).toLocaleDateString()}
-                  </td>
-                  <td className="py-2 px-4 border">
-                    <a
-                      href={`/track-order/${order.id}`}
-                      className="text-blue-500 hover:underline"
+                  </TableCell>
+                  <TableCell>{order.destination_address}</TableCell>
+                  <TableCell>{order.product_type}</TableCell>
+                  <TableCell>{order.weight} kg</TableCell>
+                  <TableCell>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      size="small"
+                      onClick={() => {
+                        setSelectedOrderId(order.id);
+                        setOpenDialog(true);
+                      }}
                     >
-                      Seguir
-                    </a>
-                  </td>
-                </tr>
+                      Seguimiento
+                    </Button>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
-        </div>
+            </TableBody>
+          </Table>
+        </TableContainer>
       )}
-    </div>
+      <Dialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        fullWidth
+        maxWidth="sm"
+      >
+        <Box p={3}>
+          <Typography variant="h6" mb={2}>
+            Seguimiento de Orden #{selectedOrderId}
+          </Typography>
+
+          {selectedOrderId ? (
+            <TrackOrderMini orderId={selectedOrderId} />
+          ) : (
+            <Typography color="text.secondary">
+              Selecciona una orden para ver su seguimiento.
+            </Typography>
+          )}
+
+          <Box mt={3} textAlign="right">
+            <Button onClick={() => setOpenDialog(false)} color="primary">
+              Cerrar
+            </Button>
+          </Box>
+        </Box>
+      </Dialog>
+    </Box>
   );
 };
 
