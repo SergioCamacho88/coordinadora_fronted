@@ -1,4 +1,3 @@
-
 # 📦 Coordinadora Frontend
 
 **Proyecto:** Gestión de Envíos y Rutas Logísticas  
@@ -116,11 +115,11 @@ Este proyecto está configurado como un microfrontend utilizando **Webpack Modul
 
 ## 🚀 Scripts disponibles
 
-| Comando | Descripción |
-| :--- | :--- |
-| `npm run dev` | Iniciar entorno de desarrollo |
-| `npm run build` | Crear build optimizado para producción |
-| `npm run preview` | Previsualizar build |
+| Comando           | Descripción                            |
+| :---------------- | :------------------------------------- |
+| `npm run dev`     | Iniciar entorno de desarrollo          |
+| `npm run build`   | Crear build optimizado para producción |
+| `npm run preview` | Previsualizar build                    |
 
 ## 📝 Historias de Usuario Implementadas
 
@@ -132,5 +131,5 @@ Este proyecto está configurado como un microfrontend utilizando **Webpack Modul
 
 ## 📹 Video de Demostración
 
-[Enlace privado a video explicativo aquí]  
-*(El video debe mostrar al candidato explicando y demostrando la solución en máximo 10 minutos, apareciendo en un recuadro tipo tutorial.)*
+https://youtu.be/8lEvdT1dGX0
+_(El video debe mostrar al candidato explicando y demostrando la solución en máximo 10 minutos, apareciendo en un recuadro tipo tutorial.)_
