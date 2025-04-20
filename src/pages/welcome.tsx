@@ -1,14 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Grid,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Card, CardContent, Typography } from "@mui/material";
 
 const Welcome: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -38,16 +31,12 @@ const Welcome: React.FC = () => {
           </Typography>
         </Box>
 
-        <Grid container columns={12} spacing={4} mb={8}>
-          <Grid xs={12} md={6}>
+        {/* Cards en dos columnas */}
+        <Box display="flex" flexWrap="wrap" gap={4} mb={8}>
+          <Box flex="1 1 45%">
             <Card>
               <CardContent>
-                <Typography
-                  variant="h5"
-                  fontWeight="bold"
-                  color="primary.dark"
-                  gutterBottom
-                >
+                <Typography variant="h5" fontWeight="bold" color="primary.dark" gutterBottom>
                   📦 Gestión de Envíos
                 </Typography>
                 <Box component="ul" sx={{ pl: 2, color: "text.secondary" }}>
@@ -58,43 +47,32 @@ const Welcome: React.FC = () => {
                 </Box>
               </CardContent>
             </Card>
-          </Grid>
+          </Box>
 
-          <Grid xs={12} md={6}>
+          <Box flex="1 1 45%">
             <Card>
               <CardContent>
-                <Typography
-                  variant="h5"
-                  fontWeight="bold"
-                  color="primary.dark"
-                  gutterBottom
-                >
+                <Typography variant="h5" fontWeight="bold" color="primary.dark" gutterBottom>
                   📊 Reportes y Métricas
                 </Typography>
                 <Box component="ul" sx={{ pl: 2, color: "text.secondary" }}>
-                  <li>
-                    Consulta avanzada de envíos con filtros personalizados
-                  </li>
+                  <li>Consulta avanzada de envíos con filtros personalizados</li>
                   <li>Métricas de desempeño logístico</li>
                   <li>Análisis de tiempos de entrega por transportista</li>
                   <li>Visualización de datos en gráficos interactivos</li>
                 </Box>
               </CardContent>
             </Card>
-          </Grid>
-        </Grid>
+          </Box>
+        </Box>
 
+        {/* Tecnologías */}
         <Card sx={{ mb: 8 }}>
           <CardContent>
-            <Typography
-              variant="h5"
-              fontWeight="bold"
-              color="primary.dark"
-              gutterBottom
-            >
+            <Typography variant="h5" fontWeight="bold" color="primary.dark" gutterBottom>
               🛠️ Tecnologías Principales
             </Typography>
-            <Grid container columns={12} spacing={2}>
+            <Box display="flex" flexWrap="wrap" gap={2}>
               {[
                 "Node.js + TypeScript",
                 "Express",
@@ -105,21 +83,22 @@ const Welcome: React.FC = () => {
                 "React",
                 "Material-UI",
               ].map((tech) => (
-                <Grid xs={6} md={3} key={tech}>
-                  <Box
-                    bgcolor="#e3f2fd"
-                    p={2}
-                    textAlign="center"
-                    borderRadius={2}
-                  >
-                    <Typography fontWeight="medium">{tech}</Typography>
-                  </Box>
-                </Grid>
+                <Box
+                  key={tech}
+                  flex="1 1 45%"
+                  bgcolor="#e3f2fd"
+                  p={2}
+                  textAlign="center"
+                  borderRadius={2}
+                >
+                  <Typography fontWeight="medium">{tech}</Typography>
+                </Box>
               ))}
-            </Grid>
+            </Box>
           </CardContent>
         </Card>
 
+        {/* Botones */}
         <Box mb={8}>
           {isAuthenticated ? (
             <Button
@@ -155,7 +134,8 @@ const Welcome: React.FC = () => {
           )}
         </Box>
 
-        <Box color="text.secondary" fontSize="0.875rem" pb={4}>
+        {/* Footer */}
+        <Box color="text.secondary" fontSize="0.875rem" pb={4} textAlign="center">
           <Typography>Desarrollado por Sergio Camacho - Abril 2025</Typography>
           <Typography>Prueba Técnica Fullstack - Coordinadora</Typography>
         </Box>

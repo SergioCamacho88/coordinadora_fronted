@@ -16,8 +16,16 @@ import {
   Divider,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
+import { ReactNode } from "react";
 
-const SidebarMenu = ({ children }: { children: React.ReactNode }) => {
+interface SidebarMenuProps {
+  children?: ReactNode;
+}
+
+
+
+
+const SidebarMenu = ({ children }: SidebarMenuProps) => {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);

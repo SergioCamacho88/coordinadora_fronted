@@ -31,6 +31,7 @@ import {
   formatTiempoEntrega,
   formatTiempoEntregaMinutos,
 } from "../utils/formatters";
+import { SelectChangeEvent } from "@mui/material/Select";
 
 interface ReportEntry {
   orderId: number;
@@ -104,9 +105,13 @@ export default function AdminReports() {
   const [pagina, setPagina] = useState(1);
   const [limite] = useState(10);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
+    setFilters({ ...filters, [e.target.name]: e.target.value });
+  };
+
+  const handleSelectChange = (e: SelectChangeEvent<string>) => {
     setFilters({ ...filters, [e.target.name]: e.target.value });
   };
 
@@ -144,7 +149,7 @@ export default function AdminReports() {
           name="fechaInicio"
           label="Fecha Inicio"
           value={filters.fechaInicio}
-          onChange={handleChange}
+          onChange={handleInputChange}
           InputLabelProps={{ shrink: true }}
           fullWidth
         />
@@ -153,14 +158,14 @@ export default function AdminReports() {
           name="fechaFin"
           label="Fecha Fin"
           value={filters.fechaFin}
-          onChange={handleChange}
+          onChange={handleInputChange}
           InputLabelProps={{ shrink: true }}
           fullWidth
         />
         <Select
           name="estado"
           value={filters.estado}
-          onChange={handleChange}
+          onChange={handleSelectChange}
           displayEmpty
           fullWidth
         >
@@ -173,7 +178,7 @@ export default function AdminReports() {
           name="transportistaId"
           label="ID Transportista"
           value={filters.transportistaId}
-          onChange={handleChange}
+          onChange={handleInputChange}
           fullWidth
         />
       </Stack>

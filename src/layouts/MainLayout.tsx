@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom"; // Para renderizar las rutas hijas
 import SidebarMenu from "../components/SidebarMenu";
 
+
 const MainLayout = () => {
   return (
     <div className=" h-screen">
