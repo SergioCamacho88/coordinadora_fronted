@@ -1,7 +1,23 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
 import axios from "../services/api";
-import { Link } from "react-router-dom";
+import TrackOrderMini from "../components/TrackOrderMini"; // ajusta la ruta si es necesario
+
+import {
+  Box,
+  Dialog,
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Button,
+  Alert,
+  Skeleton,
+} from "@mui/material";
 
 interface Order {
   id: number;
@@ -17,6 +33,8 @@ const Orders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -38,56 +56,118 @@ const Orders = () => {
     fetchOrders();
   }, [isAuthenticated]);
 
-  if (loading) return <div className="p-6">Cargando órdenes...</div>;
-  if (error) return <div className="p-6 text-red-500">Error: {error}</div>;
+  if (loading) {
+    return (
+      <Box p={4}>
+        <Typography variant="h5" mb={2}>
+          Cargando órdenes...
+        </Typography>
+        <Skeleton variant="rectangular" height={300} />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box p={4}>
+        <Alert severity="error">Error: {error}</Alert>
+      </Box>
+    );
+  }
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Órdenes</h1>
+    <Box p={4}>
+      <Typography variant="h4" fontWeight="bold" mb={4}>
+        Órdenes
+      </Typography>
 
       {orders.length === 0 ? (
-        <p>No hay órdenes disponibles.</p>
+        <Typography>No hay órdenes disponibles.</Typography>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white shadow rounded-lg">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="text-left py-3 px-4">ID</th>
-                <th className="text-left py-3 px-4">Estado</th>
-                <th className="text-left py-3 px-4">Fecha</th>
-                <th className="text-left py-3 px-4">Destino</th>
-                <th className="text-left py-3 px-4">Producto</th>
-                <th className="text-left py-3 px-4">Peso</th>
-                <th className="text-left py-3 px-4">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
+        <TableContainer component={Paper} elevation={3}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>
+                  <strong>ID</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Estado</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Fecha</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Destino</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Producto</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Peso</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Acciones</strong>
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
               {orders.map((order) => (
-                <tr key={order.id} className="border-t">
-                  <td className="py-2 px-4">{order.id}</td>
-                  <td className="py-2 px-4">{order.status}</td>
-                  <td className="py-2 px-4">
+                <TableRow key={order.id}>
+                  <TableCell>{order.id}</TableCell>
+                  <TableCell>{order.status}</TableCell>
+                  <TableCell>
                     {new Date(order.created_at).toLocaleDateString()}
-                  </td>
-                  <td className="py-2 px-4">{order.destination_address}</td>
-                  <td className="py-2 px-4">{order.product_type}</td>
-                  <td className="py-2 px-4">{order.weight} kg</td>
-                  <td className="py-2 px-4">
-                    <Link
-                      to={`/seguimiento/${order.id}`}
-                      target="_blank"
-                      className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors"
+                  </TableCell>
+                  <TableCell>{order.destination_address}</TableCell>
+                  <TableCell>{order.product_type}</TableCell>
+                  <TableCell>{order.weight} kg</TableCell>
+                  <TableCell>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      size="small"
+                      onClick={() => {
+                        setSelectedOrderId(order.id);
+                        setOpenDialog(true);
+                      }}
                     >
                       Seguimiento
-                    </Link>
-                  </td>
-                </tr>
+                    </Button>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
-        </div>
+            </TableBody>
+          </Table>
+        </TableContainer>
       )}
-    </div>
+      <Dialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        fullWidth
+        maxWidth="sm"
+      >
+        <Box p={3}>
+          <Typography variant="h6" mb={2}>
+            Seguimiento de Orden #{selectedOrderId}
+          </Typography>
+
+          {selectedOrderId ? (
+            <TrackOrderMini orderId={selectedOrderId} />
+          ) : (
+            <Typography color="text.secondary">
+              Selecciona una orden para ver su seguimiento.
+            </Typography>
+          )}
+
+          <Box mt={3} textAlign="right">
+            <Button onClick={() => setOpenDialog(false)} color="primary">
+              Cerrar
+            </Button>
+          </Box>
+        </Box>
+      </Dialog>
+    </Box>
   );
 };
 

@@ -10,7 +10,23 @@ import {
   Tooltip,
   CartesianGrid,
 } from "recharts";
-
+import {
+  Box,
+  Typography,
+  TextField,
+  Select,
+  MenuItem,
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Stack,
+  CircularProgress,
+} from "@mui/material";
 import {
   formatTiempoEntrega,
   formatTiempoEntregaMinutos,
@@ -66,7 +82,6 @@ const calcularResumenTransportistas = (
     resumen[r.transportista].tiempoTotalMinutos += diffMins;
   });
 
-  // Calcular promedio
   return Object.values(resumen).map((t) => ({
     ...t,
     tiempoPromedioMinutos:
@@ -78,7 +93,6 @@ const calcularResumenTransportistas = (
 
 export default function AdminReports() {
   const { token } = useAuth();
-
   const [reports, setReports] = useState<ReportEntry[]>([]);
   const [filters, setFilters] = useState({
     fechaInicio: "",
@@ -86,24 +100,21 @@ export default function AdminReports() {
     estado: "",
     transportistaId: "",
   });
-
   const [loading, setLoading] = useState(false);
+  const [pagina, setPagina] = useState(1);
+  const [limite] = useState(10);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     setFilters({ ...filters, [e.target.name]: e.target.value });
   };
-  const [pagina, setPagina] = useState(1);
-  const [limite] = useState(10);
 
   const handleFetchReports = useCallback(
     async (paginaActual = pagina) => {
       setLoading(true);
       try {
-        if (!token) {
-          throw new Error("No hay token de autenticación");
-        }
+        if (!token) throw new Error("No hay token de autenticación");
         const data = await fetchReports(filters, paginaActual, limite);
         setReports(data);
         setPagina(paginaActual);
@@ -121,160 +132,165 @@ export default function AdminReports() {
   }, [handleFetchReports]);
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold mb-4">Reportes de Envíos</h1>
+    <Box p={4}>
+      <Typography variant="h4" fontWeight="bold" mb={4}>
+        Reportes de Envíos
+      </Typography>
 
       {/* Filtros */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <input
+      <Stack direction={{ xs: "column", md: "row" }} spacing={2} mb={6}>
+        <TextField
           type="date"
           name="fechaInicio"
+          label="Fecha Inicio"
           value={filters.fechaInicio}
           onChange={handleChange}
-          className="border p-2 rounded"
-          placeholder="Fecha inicio"
+          InputLabelProps={{ shrink: true }}
+          fullWidth
         />
-        <input
+        <TextField
           type="date"
           name="fechaFin"
+          label="Fecha Fin"
           value={filters.fechaFin}
           onChange={handleChange}
-          className="border p-2 rounded"
-          placeholder="Fecha fin"
+          InputLabelProps={{ shrink: true }}
+          fullWidth
         />
-        <select
+        <Select
           name="estado"
           value={filters.estado}
           onChange={handleChange}
-          className="border p-2 rounded"
+          displayEmpty
+          fullWidth
         >
-          <option value="">Todos los estados</option>
-          <option value="En espera">En espera</option>
-          <option value="En tránsito">En tránsito</option>
-          <option value="Entregado">Entregado</option>
-        </select>
-        <input
-          type="text"
+          <MenuItem value="">Todos los estados</MenuItem>
+          <MenuItem value="En espera">En espera</MenuItem>
+          <MenuItem value="En tránsito">En tránsito</MenuItem>
+          <MenuItem value="Entregado">Entregado</MenuItem>
+        </Select>
+        <TextField
           name="transportistaId"
+          label="ID Transportista"
           value={filters.transportistaId}
           onChange={handleChange}
-          className="border p-2 rounded"
-          placeholder="ID Transportista"
+          fullWidth
         />
-      </div>
+      </Stack>
 
-      <button
+      <Button
+        variant="contained"
+        color="primary"
         onClick={() => handleFetchReports()}
-        className="bg-blue-500 text-white px-4 py-2 rounded mb-8"
+        sx={{ mb: 6 }}
       >
         Buscar
-      </button>
+      </Button>
 
       {/* Tabla */}
-      <div className="overflow-x-auto">
-        {loading ? (
-          <p>Cargando...</p>
-        ) : (
-          <table className="min-w-full bg-white">
-            <thead>
-              <tr>
-                <th className="py-2 px-4 border">ID</th>
-                <th className="py-2 px-4 border">Fecha</th>
-                <th className="py-2 px-4 border">Estado</th>
-                <th className="py-2 px-4 border">Transportista</th>
-                <th className="py-2 px-4 border">Horas Entrega</th>
-              </tr>
-            </thead>
-            <tbody>
+      {loading ? (
+        <Box textAlign="center" py={4}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <TableContainer component={Paper} sx={{ mb: 8 }}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>ID</TableCell>
+                <TableCell>Fecha</TableCell>
+                <TableCell>Estado</TableCell>
+                <TableCell>Transportista</TableCell>
+                <TableCell>Horas Entrega</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
               {reports.map((r) => (
-                <tr key={r.orderId}>
-                  <td className="py-2 px-4 border">{r.orderId}</td>
-                  <td className="py-2 px-4 border">
+                <TableRow key={r.orderId}>
+                  <TableCell>{r.orderId}</TableCell>
+                  <TableCell>
                     {new Date(r.fechaCreacion).toLocaleDateString()}
-                  </td>
-                  <td className="py-2 px-4 border">{r.estado}</td>
-                  <td className="py-2 px-4 border">{r.transportista}</td>
-                  <td className="py-2 px-4 border">
+                  </TableCell>
+                  <TableCell>{r.estado}</TableCell>
+                  <TableCell>{r.transportista}</TableCell>
+                  <TableCell>
                     {formatTiempoEntrega(r.fechaCreacion, r.fechaEntrega)}
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
-        )}
-      </div>
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
+
       {/* Paginación */}
-      <div className="flex justify-center items-center space-x-4 mt-8">
-        <button
-          onClick={() => handleFetchReports(pagina - 1)}
+      <Stack direction="row" justifyContent="center" spacing={2} mb={8}>
+        <Button
+          variant="contained"
           disabled={pagina === 1}
-          className={`px-4 py-2 rounded ${
-            pagina === 1
-              ? "bg-gray-300 cursor-not-allowed"
-              : "bg-blue-500 text-white"
-          }`}
+          onClick={() => handleFetchReports(pagina - 1)}
         >
           Anterior
-        </button>
-
-        <span className="text-gray-700 font-semibold">Página {pagina}</span>
-
-        <button
+        </Button>
+        <Typography variant="body1">Página {pagina}</Typography>
+        <Button
+          variant="contained"
           onClick={() => handleFetchReports(pagina + 1)}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
         >
           Siguiente
-        </button>
-      </div>
-      {/* Nueva tabla: Resumen por Transportista */}
-      <div className="my-10">
-        <h2 className="text-2xl font-bold mb-4 text-center">
-          Resumen de Entregas por Transportista
-        </h2>
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white">
-            <thead>
-              <tr>
-                <th className="py-2 px-4 border">Transportista</th>
-                <th className="py-2 px-4 border">Asigandos </th>
-                <th className="py-2 px-4 border">En tránsito</th>
-                <th className="py-2 px-4 border">Entregados</th>
-                <th className="py-2 px-4 border">Tiempo Total</th>
-                <th className="py-2 px-4 border">Tiempo Promedio</th>
-              </tr>
-            </thead>
-            <tbody>
-              {calcularResumenTransportistas(reports).map((t) => (
-                <tr key={t.transportista}>
-                  <td className="py-2 px-4 border">{t.transportista}</td>
-                  <td className="py-2 px-4 border">{t.totalEntregas}</td>
-                  <td className="py-2 px-4 border">{t.enTransito}</td>
-                  <td className="py-2 px-4 border">{t.entregados}</td>
-                  <td className="py-2 px-4 border">
-                    {formatTiempoEntregaMinutos(t.tiempoTotalMinutos)}
-                  </td>
-                  <td className="py-2 px-4 border">
-                    {formatTiempoEntregaMinutos(t.tiempoPromedioMinutos)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+        </Button>
+      </Stack>
 
-      {/* Gráfico: Tiempo de Entrega por ID de Orden */}
-      <div className="my-10">
-        <h2 className="text-3xl font-bold mb-2 text-center">
-          Tiempo de Entrega por Orden
-        </h2>
-        <p className="text-center text-gray-600 mb-8">
-          Duración de entrega individual por ID de orden
-        </p>
+      {/* Resumen por Transportista */}
+      <Box mb={8}>
+        <Typography variant="h5" fontWeight="bold" textAlign="center" mb={4}>
+          Resumen de Entregas por Transportista
+        </Typography>
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Transportista</TableCell>
+                <TableCell>Asignados</TableCell>
+                <TableCell>En tránsito</TableCell>
+                <TableCell>Entregados</TableCell>
+                <TableCell>Tiempo Total</TableCell>
+                <TableCell>Tiempo Promedio</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {calcularResumenTransportistas(reports).map((t) => (
+                <TableRow key={t.transportista}>
+                  <TableCell>{t.transportista}</TableCell>
+                  <TableCell>{t.totalEntregas}</TableCell>
+                  <TableCell>{t.enTransito}</TableCell>
+                  <TableCell>{t.entregados}</TableCell>
+                  <TableCell>
+                    {formatTiempoEntregaMinutos(t.tiempoTotalMinutos)}
+                  </TableCell>
+                  <TableCell>
+                    {formatTiempoEntregaMinutos(t.tiempoPromedioMinutos)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
+
+      {/* Gráfico: Tiempo de Entrega por Orden */}
+      <Box>
+        <Typography variant="h5" fontWeight="bold" textAlign="center" mb={2}>
+          Análisis del Tiempo de Entrega por Orden
+        </Typography>
+        <Typography textAlign="center" color="text.secondary" mb={4}>
+          Visualiza cuánto tiempo tomó completar la entrega de cada orden
+          individual (en minutos).
+        </Typography>
 
         <ResponsiveContainer width="100%" height={600}>
           <BarChart
-            layout="vertical" // 👈 Cambiar a gráfico horizontal
+            layout="vertical"
             data={reports}
             margin={{ top: 20, right: 30, left: 100, bottom: 20 }}
           >
@@ -283,7 +299,7 @@ export default function AdminReports() {
               type="number"
               tickFormatter={(value) => `${value} min`}
               label={{
-                value: "Tiempo (minutos)",
+                value: "Tiempo de Entrega (minutos)",
                 position: "insideBottom",
                 offset: -5,
                 style: { fontSize: 14 },
@@ -291,10 +307,10 @@ export default function AdminReports() {
             />
             <YAxis
               type="category"
-              dataKey="orderId" // 👈 Mostrar el ID de la orden aquí
+              dataKey="orderId"
               tick={{ fontSize: 12 }}
               label={{
-                value: "ID Orden",
+                value: "ID de Orden",
                 angle: -90,
                 position: "insideLeft",
                 style: { textAnchor: "middle", fontSize: 14 },
@@ -306,10 +322,9 @@ export default function AdminReports() {
                 const minutos = value % 60;
                 if (horas > 0 && minutos > 0)
                   return [`${horas}h ${minutos}m`, "Tiempo"];
-                if (horas > 0 && minutos === 0) return [`${horas}h`, "Tiempo"];
-                if (horas === 0 && minutos > 0)
-                  return [`${minutos}m`, "Tiempo"];
-                return ["Menos de 1 minuto", "Tiempo"];
+                if (horas > 0) return [`${horas}h`, "Tiempo"];
+                if (minutos > 0) return [`${minutos}m`, "Tiempo"];
+                return ["<1m", "Tiempo"];
               }}
             />
             <Bar
@@ -317,15 +332,14 @@ export default function AdminReports() {
                 const inicio = new Date(entry.fechaCreacion);
                 const fin = new Date(entry.fechaEntrega);
                 const diffMs = fin.getTime() - inicio.getTime();
-                const diffMins = Math.floor(diffMs / (1000 * 60));
-                return diffMins;
+                return Math.floor(diffMs / (1000 * 60));
               }}
               fill="#3b82f6"
               barSize={20}
             />
           </BarChart>
         </ResponsiveContainer>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }
